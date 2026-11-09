@@ -129,7 +129,7 @@
   </div>
   <div class="card" id="destRow">
     <span class="chip-ic"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></svg></span>
-    <div style="min-width:0"><div class="k">Heading to</div><div id="destName"></div></div>
+    <div style="min-width:0"><div class="k" id="destK">Heading to</div><div id="destName"></div><div class="k" id="destThen" style="display:none"></div></div>
   </div>
   <div class="row">
     <button class="btn round on" id="center" aria-label="Follow the rider"><svg viewBox="0 0 24 24"><path d="M3 11l18-8-8 18-2-8z"/></svg></button>
@@ -218,7 +218,11 @@
     $('bat').textContent = s.battery != null ? s.battery + '%' : '–';
     $('batIc').querySelector('i').style.width = (s.battery != null ? s.battery : 0) + '%';
     $('batIc').classList.toggle('low', s.battery != null && s.battery <= 20);
-    $('destRow').style.display = s.dest ? 'flex' : 'none'; $('destName').textContent = s.dest || '';
+    const dp = (s.dest || '').split(' → ');
+    $('destRow').style.display = s.dest ? 'flex' : 'none';
+    $('destK').textContent = dp.length > 1 ? 'Next stop' : 'Heading to';
+    $('destName').textContent = dp[0] || '';
+    $('destThen').style.display = dp.length > 1 ? '' : 'none'; $('destThen').textContent = dp.length > 1 ? 'then ' + dp[dp.length - 1] : '';
     if (s.lat != null) {
       last = { lat: s.lat, lon: s.lon };
       rider.setLatLng([s.lat, s.lon]); if (!map.hasLayer(rider)) { rider.addTo(map); acc.addTo(map); }
