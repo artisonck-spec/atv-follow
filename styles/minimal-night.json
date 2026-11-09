@@ -4,8 +4,7 @@
  "sources": {
   "omt": {
    "type": "vector",
-   "url": "https://tiles.openfreemap.org/planet",
-   "tileSize": 256
+   "url": "https://tiles.openfreemap.org/planet"
   }
  },
  "glyphs": "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
