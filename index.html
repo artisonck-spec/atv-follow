@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Follow the ride · ATV Trails</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --bg: #0e1113; --card: #171b1e; --line: #22282c; --text: #f2f5f4; --text-2: #c9d0d3; --muted: #8d979c;
+    --brand: #2fd4b5; --on-brand: #062019; --green: #3dd68c; --amber: #f5b14c; --danger: #ff8a8a;
+    --font: 'Barlow', system-ui, Roboto, sans-serif; --num: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 16px/1.3 var(--font); overflow: hidden; }
+  #map { position: absolute; inset: 0; background: #0b0e10; }
+  .dark-tiles { filter: invert(1) hue-rotate(180deg) brightness(.82) contrast(1.1) saturate(.55) sepia(.12) hue-rotate(110deg); }
+  .leaflet-control-attribution { background: none !important; color: rgba(141,151,156,.8) !important; font-size: 9px; }
+  .leaflet-control-attribution a { color: inherit !important; }
+  .leaflet-bottom { bottom: var(--panel-h, 150px); }
+
+  #head { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: 12px; right: 12px; z-index: 1000;
+    display: flex; align-items: center; gap: 12px; background: rgba(23,27,30,.96); border: 1px solid var(--line); border-radius: 18px; padding: 12px 14px; }
+  .av { width: 44px; height: 44px; border-radius: 22px; background: var(--brand); color: var(--on-brand); display: grid; place-items: center; font: 700 18px var(--font); flex: none; }
+  #who { font: 700 18px var(--font); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #state { font-size: 14px; color: var(--muted); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .dot { width: 8px; height: 8px; border-radius: 4px; background: var(--muted); }
+  .live .dot { background: var(--green); box-shadow: 0 0 0 0 rgba(61,214,140,.6); animation: p 1.6s infinite; }
+  .stale .dot { background: var(--amber); }
+  .ended .dot { background: var(--danger); }
+  @keyframes p { 70% { box-shadow: 0 0 0 8px rgba(61,214,140,0); } 100% { box-shadow: 0 0 0 0 rgba(61,214,140,0); } }
+  .badge { margin-left: auto; font: 700 12px var(--font); padding: 5px 10px; border-radius: 10px; background: rgba(61,214,140,.15); color: var(--green); letter-spacing: .04em; }
+  .stale .badge { background: rgba(245,177,76,.15); color: var(--amber); }
+  .ended .badge { background: rgba(255,90,90,.15); color: var(--danger); }
+
+  #panel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1000; background: var(--bg); border-top: 1px solid #1f2529;
+    border-radius: 26px 26px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stats > div { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; }
+  .stats b { display: block; font: 700 30px/30px var(--num); }
+  .stats span { color: var(--muted); font-size: 12px; }
+  #destRow { color: var(--text-2); font-size: 14px; margin: 10px 2px 0; display: none; }
+  .row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { flex: 1; height: 52px; border-radius: 16px; border: 1px solid #262c30; background: var(--card); color: var(--text); font: 600 16px var(--font);
+    display: flex; align-items: center; justify-content: center; text-decoration: none; }
+  .btn.primary { background: var(--brand); border-color: var(--brand); color: var(--on-brand); font-weight: 700; }
+  #msg { position: absolute; inset: 0; z-index: 1100; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(14,17,19,.92); text-align: center; }
+  #msg.on { display: flex; }
+  #msg h2 { margin: 0 0 8px; font: 700 22px var(--font); }
+  #msg p { margin: 0; color: var(--muted); }
+  .me-icon { background: none; border: 0; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="head">
+  <div class="av" id="av">A</div>
+  <div style="min-width:0;flex:1">
+    <div id="who">Loading…</div>
+    <div id="state"><span class="dot"></span><span id="stateTxt">Connecting</span></div>
+  </div>
+  <span class="badge" id="badge">LIVE</span>
+</div>
+
+<div id="panel">
+  <div class="stats">
+    <div><b id="spd">–</b><span>km/h</span></div>
+    <div><b id="dist">–</b><span>km so far</span></div>
+    <div><b id="bat">–</b><span>battery</span></div>
+  </div>
+  <div id="destRow">Heading to <b id="destName"></b></div>
+  <div class="row">
+    <button class="btn" id="center">Show on map</button>
+    <a class="btn primary" id="dir" href="#" target="_blank" rel="noopener">Directions</a>
+  </div>
+</div>
+
+<div id="msg"><div><h2 id="msgT"></h2><p id="msgP"></p></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+  const SUPA = 'https://umagrtiiygfnjiwsflea.supabase.co';
+  const KEY = 'sb_publishable_zCRZtTY-Z3v-0VNVrDuVWg__zTXvOZM';
+  const $ = (id) => document.getElementById(id);
+  const token = new URLSearchParams(location.search).get('t') || '';
+
+  const map = L.map('map', { zoomControl: false, attributionControl: false }).setView([56.95, 24.6], 8);
+  L.control.attribution({ prefix: false }).addTo(map);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, className: 'dark-tiles', attribution: '© OpenStreetMap' }).addTo(map);
+  const track = L.polyline([], { color: '#2fd4b5', weight: 5, opacity: .9 }).addTo(map);
+  const acc = L.circle([0, 0], { radius: 1, color: '#2fd4b5', weight: 1, opacity: .4, fillOpacity: .08, interactive: false });
+  const icon = L.divIcon({ className: 'me-icon', iconSize: [44, 44], iconAnchor: [22, 22],
+    html: '<div id="arrow" style="width:44px;height:44px;transition:transform .5s"><svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="20" fill="rgba(47,212,181,.2)"/><path d="M22 7 L32 33 L22 27 L12 33 Z" fill="#f2f5f4" stroke="#0e1113" stroke-width="2" stroke-linejoin="round"/></svg></div>' });
+  const rider = L.marker([0, 0], { icon, interactive: false });
+  let follow = true, first = true, last = null;
+  map.on('dragstart', () => { follow = false; });
+  $('center').onclick = () => { follow = true; if (last) map.setView([last.lat, last.lon], Math.max(map.getZoom(), 15)); };
+
+  const sync = () => document.documentElement.style.setProperty('--panel-h', $('panel').offsetHeight + 'px');
+  addEventListener('resize', sync); sync();
+
+  function km(pts) {
+    let m = 0; for (let i = 1; i < pts.length; i++) m += map.distance(pts[i - 1], pts[i]); return m / 1000;
+  }
+  function ago(s) { return s < 60 ? Math.round(s) + ' s ago' : s < 3600 ? Math.round(s / 60) + ' min ago' : Math.round(s / 3600) + ' h ago'; }
+  function message(t, p) { $('msgT').textContent = t; $('msgP').textContent = p; $('msg').classList.add('on'); }
+
+  async function tick() {
+    if (!token) { message('Link is incomplete', 'Ask the rider to send the link again.'); return; }
+    let s = null;
+    try {
+      const r = await fetch(SUPA + '/rest/v1/rpc/get_share', { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_token: token }) });
+      s = r.ok ? await r.json() : null;
+    } catch (e) { $('stateTxt').textContent = 'No connection · retrying'; return; }
+    if (!s) { message('Link not found', 'It may have been mistyped, or the rider stopped sharing a while ago.'); return; }
+    $('msg').classList.remove('on');
+    const name = s.rider || 'Rider';
+    $('av').textContent = name.trim()[0].toUpperCase();
+    const age = s.updated_at ? (Date.now() - new Date(s.updated_at)) / 1000 : null;
+    const head = $('head');
+    head.classList.remove('live', 'stale', 'ended');
+    if (!s.active) { head.classList.add('ended'); $('who').textContent = name + ' stopped sharing'; $('badge').textContent = 'ENDED'; $('stateTxt').textContent = age != null ? 'Last seen ' + ago(age) : 'No position yet'; }
+    else if (age == null) { head.classList.add('stale'); $('who').textContent = name + ' is sharing'; $('badge').textContent = 'WAITING'; $('stateTxt').textContent = 'Waiting for the first position'; }
+    else if (age > 90) { head.classList.add('stale'); $('who').textContent = name + ' is riding'; $('badge').textContent = 'NO SIGNAL'; $('stateTxt').textContent = 'Last seen ' + ago(age) + ' · may be out of signal'; }
+    else { head.classList.add('live'); $('who').textContent = name + ' is riding'; $('badge').textContent = 'LIVE'; $('stateTxt').textContent = 'Updated ' + ago(age); }
+
+    const pts = s.track || [];
+    track.setLatLngs(pts);
+    $('dist').textContent = pts.length > 1 ? km(pts).toFixed(1) : '0.0';
+    $('spd').textContent = s.speed != null && s.active && age != null && age < 90 ? Math.round(s.speed * 3.6) : '–';
+    $('bat').textContent = s.battery != null ? s.battery + '%' : '–';
+    $('destRow').style.display = s.dest ? 'block' : 'none'; $('destName').textContent = s.dest || '';
+    if (s.lat != null) {
+      last = { lat: s.lat, lon: s.lon };
+      rider.setLatLng([s.lat, s.lon]); if (!map.hasLayer(rider)) { rider.addTo(map); acc.addTo(map); }
+      acc.setLatLng([s.lat, s.lon]).setRadius(s.accuracy || 1);
+      const a = document.getElementById('arrow'); if (a && s.heading != null) a.style.transform = 'rotate(' + s.heading + 'deg)';
+      $('dir').href = 'https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lon;
+      if (first) { map.setView([s.lat, s.lon], 15); first = false; } else if (follow) map.panTo([s.lat, s.lon]);
+    }
+    sync();
+  }
+  tick(); setInterval(tick, 5000);
+})();
+</script>
+</body>
+</html>
