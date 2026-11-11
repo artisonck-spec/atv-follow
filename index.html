@@ -105,6 +105,23 @@
   #msg h2 { margin: 0 0 6px; font: 600 22px var(--font); }
   #msg p { margin: 0; color: var(--ink-2); }
   @media (prefers-reduced-motion: reduce) { .me-pulse, .live .badge i { animation: none; } }
+  /* hidden by the rider: no speed dial / no battery card */
+  body.no-speed .dial { display: none; }
+  body.no-speed .mini { grid-template-columns: 1fr 1fr; }
+  body.no-battery .bat { display: none; }
+  /* rider's status: a thought bubble above the icon */
+  .mood-icon { background: none; border: 0; }
+  .mood { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; pointer-events: none;
+    animation: moodIn .5s cubic-bezier(.3,1.5,.5,1), moodFloat 3.2s ease-in-out .5s infinite; }
+  .mood .cloud { max-width: 220px; width: max-content; padding: 9px 14px; border-radius: 20px; background: #fff; color: #16181a; font: 600 15px/1.25 var(--font);
+    box-shadow: 0 8px 24px rgba(0,0,0,.35); text-align: center; }
+  .mood .t1, .mood .t2 { border-radius: 50%; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.3); }
+  .mood .t1 { width: 12px; height: 12px; margin: 4px 0 0 18px; }
+  .mood .t2 { width: 7px; height: 7px; margin: 3px 0 0 30px; }
+  @keyframes moodIn { from { opacity: 0; transform: translateX(-50%) scale(.5); } }
+  @keyframes moodFloat { 50% { transform: translateX(-50%) translateY(-4px); } }
+  @media (prefers-reduced-motion: reduce) { .mood { animation: none; } }
+
 </style>
 </head>
 <body>
@@ -173,6 +190,8 @@
       '<circle cx="28" cy="28" r="20" fill="#1b1e21" stroke="#fff" stroke-width="2.5"/>' +
       '<path d="M28 14.5 L37.5 38 L28 32.5 L18.5 38 Z" fill="url(#meG)" stroke="url(#meG)" stroke-width="2" stroke-linejoin="round"/></svg></div>' });
   const rider = L.marker([0, 0], { icon, interactive: false, zIndexOffset: 1000 });
+  const moodMk = L.marker([0, 0], { interactive: false, zIndexOffset: 1100, icon: L.divIcon({ className: 'mood-icon', iconSize: [0, 0], iconAnchor: [0, 30], html: '' }) });
+  let moodNow = '';
   let follow = true, first = true, last = null;
   const setFollow = (on) => { follow = on; $('center').classList.toggle('on', on); };
   map.on('dragstart', () => setFollow(false));
@@ -215,6 +234,16 @@
     const kmh = moving ? Math.round(s.speed * 3.6) : null;
     $('spd').textContent = kmh == null ? '–' : kmh;
     $('dial').style.setProperty('--sp', kmh == null ? 0 : Math.min(1, kmh / 80).toFixed(3));
+    document.body.classList.toggle('no-speed', s.show_speed === false);
+    document.body.classList.toggle('no-battery', s.show_battery === false);
+    // status bubble: shown while the share is live, for up to 6 hours after it was set
+    const moodOk = s.mood && s.active && (!s.mood_at || Date.now() - new Date(s.mood_at) < 6 * 3600e3) ? s.mood : '';
+    if (moodOk !== moodNow) {
+      moodNow = moodOk;
+      const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      moodMk.setIcon(L.divIcon({ className: 'mood-icon', iconSize: [0, 0], iconAnchor: [0, 30],
+        html: moodOk ? `<div class="mood"><div class="cloud">${esc(moodOk)}</div><i class="t1"></i><i class="t2"></i></div>` : '' }));
+    }
     $('bat').textContent = s.battery != null ? s.battery + '%' : '–';
     $('batIc').querySelector('i').style.width = (s.battery != null ? s.battery : 0) + '%';
     $('batIc').classList.toggle('low', s.battery != null && s.battery <= 20);
@@ -225,7 +254,8 @@
     $('destThen').style.display = dp.length > 1 ? '' : 'none'; $('destThen').textContent = dp.length > 1 ? 'then ' + dp[dp.length - 1] : '';
     if (s.lat != null) {
       last = { lat: s.lat, lon: s.lon };
-      rider.setLatLng([s.lat, s.lon]); if (!map.hasLayer(rider)) { rider.addTo(map); acc.addTo(map); }
+      rider.setLatLng([s.lat, s.lon]); if (!map.hasLayer(rider)) { rider.addTo(map); acc.addTo(map); moodMk.addTo(map); }
+      moodMk.setLatLng([s.lat, s.lon]);
       acc.setLatLng([s.lat, s.lon]).setRadius(s.accuracy || 1);
       const a = document.getElementById('arrow'); if (a && s.heading != null) a.style.transform = 'rotate(' + s.heading + 'deg)';
       $('dir').href = 'https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lon;
