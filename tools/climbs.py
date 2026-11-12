@@ -111,7 +111,7 @@ def from_ways(ways):
         for k in range(3, 21):
             if len(hs) <= k: break
             gain = np.abs(hs[k:] - hs[:-k]); grade = gain / (k * 10)
-            good = np.where((gain >= 6) & (grade >= .07))[0]
+            good = np.where((gain >= 6) & (grade >= .07) & (grade <= .6))[0]   # steeper than 60 % is a fault in the height data, not a track
             for i in good:
                 m = i + k // 2; chunk = m // 40; score = gain[i] * grade[i]
                 if chunk not in best or score > best[chunk][0]:
