@@ -5,20 +5,20 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['tools/build_pack.py', '.github/workflows/latvia-pack.yml']
+    paths: ['tools/build_pack.py', 'tools/climbs.py', '.github/workflows/latvia-pack.yml']
 permissions:
   contents: write
 concurrency: { group: latvia-pack, cancel-in-progress: false }
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - name: Build the pack
-        run: python3 tools/build_pack.py
+        run: pip install numpy pillow >/dev/null && python3 tools/build_pack.py
       - name: Publish
         run: |
           git config user.name "Artis"

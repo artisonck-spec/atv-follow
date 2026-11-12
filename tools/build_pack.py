@@ -3,6 +3,7 @@
 # Runs every week on GitHub Actions; the app downloads data/latvia.json once and then keeps it fresh.
 # Keep the filters in step with POI, challengeType() and funQuery() in the app's index.html.
 import json, sys, time, os, urllib.request, urllib.parse
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 S, W, N, E = 55.60, 20.80, 58.15, 28.30          # Latvia plus a strip over each border
 ROWS, COLS = 2, 4
@@ -101,7 +102,15 @@ for key, e in fun_raw.items():
     p, t = ll(e), e.get('tags', {})
     if p: fun.append([key, p[0], p[1], {k: v for k, v in t.items() if not k.startswith(FUN_DROP) and not (k.startswith('name:') and k != 'name:en')}])
 
-counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun)}
+# climbs from ground height (a failure here never blocks the rest of the pack)
+climbs = []
+try:
+    import climbs as climbfinder
+    climbs = climbfinder.find((S, W, N, E))
+except Exception as e:
+    print('climbs skipped:', e)
+cond += climbs
+counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs)}
 print('counts', counts)
 # Sanity check so a half-broken run never replaces a good pack
 if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] < 500:
