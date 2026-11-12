@@ -14,14 +14,14 @@ def _get(url, data=None, timeout=300):
     return urllib.request.urlopen(urllib.request.Request(url, data=data, headers=UA), timeout=timeout).read()
 
 
-def _overpass(q):
-    for attempt in range(3):
+def _overpass(q, rounds=3):
+    for attempt in range(rounds):
         for h in HOSTS:
             try:
                 return json.loads(_get(h + '/api/interpreter', ('data=' + urllib.parse.quote(q)).encode()))['elements']
             except Exception as e:
                 print('  ', h, 'failed:', str(e)[:120], flush=True); time.sleep(15)
-        time.sleep(60)
+        time.sleep(45)
     raise RuntimeError('overpass kept failing')
 
 
@@ -45,14 +45,26 @@ def find(bbox, rows=4, cols=8):
     S, W, N, E = bbox
     ways = []
     dl, dw = (N - S) / rows, (E - W) / cols
+    def one(box, depth=0):
+        bb = '(%.3f,%.3f,%.3f,%.3f)' % box
+        q = ('[out:json][timeout:240][maxsize:1073741824];way["highway"~"^(track|path)$"]["access"!~"^(no|private)$"]'
+             f'["motor_vehicle"!~"^(no|private)$"]{bb};out skel geom;')
+        try:
+            return _overpass(q, rounds=3 if depth >= 3 else 1)
+        except RuntimeError:
+            if depth >= 3: raise
+            print('   climbs: region too heavy right now, cutting it in four:', bb, flush=True)
+            s2, w2, n2, e2 = box; ml, mo = (s2 + n2) / 2, (w2 + e2) / 2
+            out = []
+            for sub in [(s2, w2, ml, mo), (s2, mo, ml, e2), (ml, w2, n2, mo), (ml, mo, n2, e2)]:
+                out += one(sub, depth + 1); time.sleep(4)
+            return out
     for r in range(rows):
         for c in range(cols):
-            bb = f'({S + r * dl:.3f},{W + c * dw:.3f},{S + (r + 1) * dl:.3f},{W + (c + 1) * dw:.3f})'
-            q = ('[out:json][timeout:240][maxsize:1073741824];way["highway"~"^(track|path)$"]["access"!~"^(no|private)$"]'
-                 f'["motor_vehicle"!~"^(no|private)$"]{bb};out skel geom;')
-            els = _overpass(q)
+            box = (S + r * dl, W + c * dw, S + (r + 1) * dl, W + (c + 1) * dw)
+            els = one(box)
             ways += [[(p['lat'], p['lon']) for p in e.get('geometry', [])] for e in els if e.get('geometry')]
-            print(f'climbs: tracks {bb} {len(els)} (total {len(ways)})', flush=True)
+            print(f'climbs: tracks {"(%.3f,%.3f,%.3f,%.3f)" % box} {len(els)} (total {len(ways)})', flush=True)
             time.sleep(4)
     # resample every 10 m
     lines = []

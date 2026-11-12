@@ -31,8 +31,12 @@ POI_KEEP = {'name', 'brand', 'opening_hours', 'amenity', 'shop', 'tourism', 'cra
 FUN_DROP = ('source', 'addr:', 'note', 'fixme', 'FIXME', 'check_date', 'ref:', 'created_by', 'survey', 'mapillary', 'contact:', 'phone', 'email', 'website')
 
 
-def overpass(q):
-    for attempt in range(3):
+class Busy(Exception):
+    pass
+
+
+def overpass(q, rounds=3):
+    for attempt in range(rounds):
         for h in HOSTS:
             try:
                 req = urllib.request.Request(h + '/api/interpreter', data=('data=' + urllib.parse.quote(q)).encode(), headers=UA)
@@ -44,25 +48,44 @@ def overpass(q):
             except Exception as e:
                 print('  ', h, 'failed:', str(e)[:160], flush=True)
                 time.sleep(15)
-        time.sleep(60)
-    raise SystemExit('Overpass kept failing; the previous pack stays published')
+        time.sleep(45)
+    raise Busy()
+
+
+def split4(box):
+    s, w, n, e = box; ml, mo = (s + n) / 2, (w + e) / 2
+    return [(s, w, ml, mo), (s, mo, ml, e), (ml, w, n, mo), (ml, mo, n, e)]
+
+
+def fetch_box(make_query, box, depth=0):
+    """One region. If the servers cannot manage it, it is cut into four smaller pieces (up to three times) and tried again."""
+    bb = '(%.3f,%.3f,%.3f,%.3f)' % box
+    try:
+        return overpass(make_query(bb), rounds=3 if depth >= 3 else 1)
+    except Busy:
+        if depth >= 3:
+            raise SystemExit('Overpass kept failing; the previous pack stays published')
+        print('   region too heavy for the servers right now, cutting it in four:', bb, flush=True)
+        out = []
+        for sub in split4(box):
+            out += fetch_box(make_query, sub, depth + 1); time.sleep(5)
+        return out
 
 
 def tiles():
     dl, dw = (N - S) / ROWS, (E - W) / COLS
     for r in range(ROWS):
         for c in range(COLS):
-            yield f'({S + r * dl:.3f},{W + c * dw:.3f},{S + (r + 1) * dl:.3f},{W + (c + 1) * dw:.3f})'
+            yield (S + r * dl, W + c * dw, S + (r + 1) * dl, W + (c + 1) * dw)
 
 
 def collect(name, filters):
     out = {}
-    for bb in tiles():
-        q = '[out:json][timeout:240][maxsize:536870912];(' + ''.join(f + bb + ';' for f in filters) + ');out center tags;'
-        els = overpass(q)
+    for box in tiles():
+        els = fetch_box(lambda bb: '[out:json][timeout:240][maxsize:536870912];(' + ''.join(f + bb + ';' for f in filters) + ');out center tags;', box)
         for e in els:
             out[e['type'][0] + str(e['id'])] = e
-        print(f'{name} {bb}: {len(els)} (total {len(out)})', flush=True)
+        print(f'{name} {"(%.3f,%.3f,%.3f,%.3f)" % box}: {len(els)} (total {len(out)})', flush=True)
         time.sleep(5)
     return out
 
