@@ -66,9 +66,15 @@ def find(bbox, rows=4, cols=8):
             ways += [[(p['lat'], p['lon']) for p in e.get('geometry', [])] for e in els if e.get('geometry')]
             print(f'climbs: tracks {"(%.3f,%.3f,%.3f,%.3f)" % box} {len(els)} (total {len(ways)})', flush=True)
             time.sleep(4)
+    return from_ways(ways)
+
+
+def from_ways(ways):
+    """ways: list of [(lat, lon), ...] (or Nx2 arrays). Returns climb spots [lat, lon, 'c', gain m, grade %, length m]."""
     # resample every 10 m
     lines = []
     for g in ways:
+        g = [tuple(x) for x in g]
         pts = [g[0]]
         for a, b in zip(g, g[1:]):
             d = math.hypot((b[0] - a[0]) * 111320, (b[1] - a[1]) * 111320 * math.cos(math.radians(a[0])))
