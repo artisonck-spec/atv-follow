@@ -14,7 +14,8 @@ POI_Q = ['amenity=fuel', 'amenity=restaurant', 'amenity=cafe', 'amenity=fast_foo
          'shop=supermarket', 'shop=convenience', 'amenity=parking', 'tourism=camp_site', 'tourism=caravan_site',
          'amenity=shelter', 'tourism=viewpoint', 'amenity=toilets', 'amenity=drinking_water',
          'amenity=hospital', 'amenity=clinic', 'amenity=pharmacy',
-         'tourism=hotel', 'tourism=guest_house', 'tourism=motel', 'tourism=chalet']
+         'tourism=hotel', 'tourism=guest_house', 'tourism=motel', 'tourism=chalet',
+         'sport=motocross', 'sport=atv', 'sport=4wd', 'sport=enduro', 'sport=motor', 'highway=raceway']   # play zones
 COND_Q = ['way["highway"~"^(track|path|unclassified)$"]["surface"="mud"]',
           'way["highway"~"^(track|path)$"]["smoothness"~"^(very_bad|horrible|very_horrible|impassable)$"]',
           'way["highway"="track"]["tracktype"="grade5"]', 'nwr["ford"~"^(yes|stepping_stones)$"]',
@@ -25,7 +26,7 @@ FUN_Q = ['nwr["tourism"="viewpoint"]', 'nwr["man_made"="tower"]["tower:type"="ob
          'nwr["historic"~"^(fort|castle|ruins|manor|archaeological_site|bunker|battlefield|military|tank|aircraft|city_gate|tower)$"]',
          'nwr["natural"~"^(waterfall|cave_entrance)$"]', 'nwr["waterway"="waterfall"]', 'node["natural"~"^(stone|spring)$"]["name"]']
 
-POI_KEEP = {'name', 'brand', 'opening_hours', 'amenity', 'shop', 'tourism', 'craft'}
+POI_KEEP = {'name', 'brand', 'opening_hours', 'amenity', 'shop', 'tourism', 'craft', 'sport', 'highway'}
 FUN_DROP = ('source', 'addr:', 'note', 'fixme', 'FIXME', 'check_date', 'ref:', 'created_by', 'survey', 'mapillary', 'contact:', 'phone', 'email', 'website')
 
 
