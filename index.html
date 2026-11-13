@@ -158,6 +158,7 @@
 
 <div id="msg"><div class="box"><span class="chip-ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><h2 id="msgT"></h2><p id="msgP"></p></div></div>
 
+<script src="follow-i18n.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.0.22/leaflet-maplibre-gl.js"></script>
@@ -342,5 +343,6 @@ const AVATARS = {
   tick(); setInterval(tick, 5000);
 })();
 </script>
+<script>window.I18N && I18N.set((navigator.language || '').slice(0, 2).toLowerCase());   // the viewer's own browser language</script>
 </body>
 </html>
