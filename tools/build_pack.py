@@ -66,6 +66,7 @@ def cond_type(t):   # same as challengeType() in the app
 
 
 pois, cond, fun, tracks = {}, {}, {}, {}
+cams = {}   # speed cameras: [lat, lon, limit km/h or 0, facing direction in degrees or -1]
 
 
 class Reader(osmium.SimpleHandler):
@@ -82,6 +83,18 @@ class Reader(osmium.SimpleHandler):
     def node(self, n):
         if len(n.tags) == 0: return
         t = {x.k: x.v for x in n.tags}
+        if t.get('highway') == 'speed_camera' or t.get('enforcement') == 'maxspeed':
+            try:
+                lat, lon = n.location.lat, n.location.lon
+                if S <= lat <= N and W <= lon <= E:
+                    lim = t.get('maxspeed', '').split()[0] if t.get('maxspeed') else ''
+                    d = t.get('direction', '')
+                    deg = {'N': 0, 'NE': 45, 'E': 90, 'SE': 135, 'S': 180, 'SW': 225, 'W': 270, 'NW': 315}.get(d.upper(), None)
+                    if deg is None:
+                        try: deg = int(float(d)) % 360
+                        except ValueError: deg = -1
+                    cams['n%d' % n.id] = [round(lat, 5), round(lon, 5), int(lim) if lim.isdigit() else 0, deg]
+            except Exception: pass
         try: self.take('n%d' % n.id, n.location.lat, n.location.lon, t, True)
         except Exception: pass
 
@@ -130,7 +143,7 @@ try:
 except Exception as e:
     print('climbs skipped:', repr(e)[:300])
 cond += climbs
-counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs)}
+counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams)}
 print('counts', counts)
 # Sanity check so a half-broken run never replaces a good pack
 if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] < 500:
@@ -138,7 +151,7 @@ if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] 
 
 t = int(time.time() * 1000)
 os.makedirs('data', exist_ok=True)
-body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun}, ensure_ascii=False, separators=(',', ':'))
+body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun, 'cams': list(cams.values())}, ensure_ascii=False, separators=(',', ':'))
 open('data/latvia.json', 'w').write(body)
 size = len(body.encode())
 json.dump({'v': 1, 't': t, 'bytes': size, 'bbox': [S, W, N, E], 'counts': counts}, open('data/latvia-meta.json', 'w'))
