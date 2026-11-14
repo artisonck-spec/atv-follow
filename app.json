@@ -1,7 +1,7 @@
 {
- "build": 41,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=41",
- "notes": "Updates from inside the app",
- "notes_lv": "Atjauninājumi pašā lietotnē",
- "notes_ru": "Обновления прямо в приложении"
+ "build": 42,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=42",
+ "notes": "Test of the in-app update",
+ "notes_lv": "Lietotnes atjauninājuma pārbaude",
+ "notes_ru": "Проверка обновления в приложении"
 }
