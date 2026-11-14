@@ -67,6 +67,8 @@ def cond_type(t):   # same as challengeType() in the app
 
 pois, cond, fun, tracks = {}, {}, {}, {}
 cams = {}   # speed cameras: [lat, lon, limit km/h or 0, facing direction in degrees or -1]
+sections = {}   # average-speed sections: relation id -> {'from': node id, 'to': node id, 'lim': km/h}
+want_nodes = {}  # node id -> [lat, lon], filled in a second, quick pass
 
 
 class Reader(osmium.SimpleHandler):
@@ -97,6 +99,16 @@ class Reader(osmium.SimpleHandler):
             except Exception: pass
         try: self.take('n%d' % n.id, n.location.lat, n.location.lon, t, True)
         except Exception: pass
+
+    def relation(self, r):
+        t = {x.k: x.v for x in r.tags}
+        if t.get('type') != 'enforcement' or t.get('enforcement') not in ('average_speed', 'section_control'): return
+        fr = [m.ref for m in r.members if m.type == 'n' and m.role in ('from', 'start')]
+        to = [m.ref for m in r.members if m.type == 'n' and m.role in ('to', 'end')]
+        if not fr or not to: return
+        lim = (t.get('maxspeed') or '').split()[0] if t.get('maxspeed') else ''
+        sections['r%d' % r.id] = {'from': fr[0], 'to': to[0], 'lim': int(lim) if lim.isdigit() else 0}
+        want_nodes[fr[0]] = None; want_nodes[to[0]] = None
 
     def way(self, w):
         if len(w.tags) == 0: return
@@ -130,6 +142,11 @@ for name in FILES:
         raise SystemExit('Could not download the map file for ' + name + '; the previous pack stays published')
     t0 = time.time()
     Reader().apply_file(path, locations=True)
+    if any(v is None for v in want_nodes.values()):   # where average-speed sections start and end
+        class Nodes(osmium.SimpleHandler):
+            def node(self, n):
+                if n.id in want_nodes and want_nodes[n.id] is None: want_nodes[n.id] = [round(n.location.lat, 5), round(n.location.lon, 5)]
+        Nodes().apply_file(path)
     os.remove(path)
     print(f'{name}: read in {time.time() - t0:.0f} s · places {len(pois)} conditions {len(cond)} discover {len(fun)} tracks {len(tracks)}', flush=True)
 
@@ -143,7 +160,11 @@ try:
 except Exception as e:
     print('climbs skipped:', repr(e)[:300])
 cond += climbs
-counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams)}
+secs = []
+for k, v in sections.items():
+    a, b = want_nodes.get(v['from']), want_nodes.get(v['to'])
+    if a and b and S <= a[0] <= N and W <= a[1] <= E: secs.append([a[0], a[1], b[0], b[1], v['lim']])
+counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams), 'avg_sections': len(secs)}
 print('counts', counts)
 # Sanity check so a half-broken run never replaces a good pack
 if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] < 500:
@@ -151,7 +172,7 @@ if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] 
 
 t = int(time.time() * 1000)
 os.makedirs('data', exist_ok=True)
-body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun, 'cams': list(cams.values())}, ensure_ascii=False, separators=(',', ':'))
+body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun, 'cams': list(cams.values()), 'secs': secs}, ensure_ascii=False, separators=(',', ':'))
 open('data/latvia.json', 'w').write(body)
 size = len(body.encode())
 json.dump({'v': 1, 't': t, 'bytes': size, 'bbox': [S, W, N, E], 'counts': counts}, open('data/latvia-meta.json', 'w'))
