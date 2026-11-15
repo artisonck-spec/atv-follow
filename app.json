@@ -1,7 +1,7 @@
 {
- "build": 45,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=45",
- "notes": "Rider status with crown, light look, sound and interface settings, volume, separate voice language",
- "notes_lv": "Braucēja statuss ar kroni, gaišais izskats, skaņas un saskarnes iestatījumi, skaļums, atsevišķa balss valoda",
- "notes_ru": "Статус райдера с короной, светлая тема, настройки звука и интерфейса, громкость, отдельный язык голоса"
+ "build": 46,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=46",
+ "notes": "Crash reports, backup, warnings from other riders, rain hint, no-go areas, Estonia and Lithuania, routes without signal, voice fix",
+ "notes_lv": "Kļūdu atskaites, dublējums, braucēju brīdinājumi, lietus norāde, aizliegtās zonas, Igaunija un Lietuva, maršruti bez zonas, balss labojums",
+ "notes_ru": "Отчёты об ошибках, резервная копия, предупреждения райдеров, дождь, запретные зоны, Эстония и Литва, маршруты без связи, исправление голоса"
 }
