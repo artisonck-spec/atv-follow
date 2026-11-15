@@ -1,7 +1,7 @@
 {
- "build": 46,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=46",
- "notes": "Crash reports, backup, warnings from other riders, rain hint, no-go areas, Estonia and Lithuania, routes without signal, voice fix",
- "notes_lv": "Kļūdu atskaites, dublējums, braucēju brīdinājumi, lietus norāde, aizliegtās zonas, Igaunija un Lietuva, maršruti bez zonas, balss labojums",
- "notes_ru": "Отчёты об ошибках, резервная копия, предупреждения райдеров, дождь, запретные зоны, Эстония и Литва, маршруты без связи, исправление голоса"
+ "build": 48,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=48",
+ "notes": "Official protected nature areas and microreserves on the map; trail routes go round them",
+ "notes_lv": "Oficiālās aizsargājamās dabas teritorijas un mikroliegumi kartē; taku maršruti tos apiet",
+ "notes_ru": "Официальные охраняемые природные территории и микрозаказники на карте; маршруты по трассам их объезжают"
 }
