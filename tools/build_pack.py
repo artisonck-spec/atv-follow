@@ -16,7 +16,13 @@ import socket
 _gai = socket.getaddrinfo
 socket.getaddrinfo = lambda host, port, family=0, *a, **k: _gai(host, port, socket.AF_INET, *a, **k)
 
-S, W, N, E = 55.60, 20.80, 58.15, 28.30          # Latvia plus a strip over each border
+# One pack per country, each with a strip over its borders; everything is read once for the whole Baltics.
+COUNTRIES = {
+    'latvia':    (55.60, 20.80, 58.15, 28.30),
+    'estonia':   (57.45, 21.50, 59.80, 28.30),
+    'lithuania': (53.85, 20.90, 56.50, 26.90),
+}
+S, W, N, E = 53.85, 20.80, 59.80, 28.30          # all three together
 FILES = ['latvia', 'estonia', 'lithuania']
 UA = {'User-Agent': 'ATV-Trails-pack/1.0 (github.com/artisonck-spec/atv-follow)'}
 
@@ -209,16 +215,32 @@ secs = []
 for k, v in sections.items():
     a, b = want_nodes.get(v['from']), want_nodes.get(v['to'])
     if a and b and S <= a[0] <= N and W <= a[1] <= E: secs.append([a[0], a[1], b[0], b[1], v['lim']])
-counts = {'nogo': len(nogo), 'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams), 'avg_sections': len(secs)}
-print('counts', counts)
-# Sanity check so a half-broken run never replaces a good pack
-if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] < 500:
-    raise SystemExit('Too little data, keeping the previous pack')
+nogo_l, cams_l = list(nogo.values()), list(cams.values())
+print('all of it:', {'nogo': len(nogo_l), 'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams_l), 'avg_sections': len(secs)}, flush=True)
 
 t = int(time.time() * 1000)
 os.makedirs('data', exist_ok=True)
-body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun, 'cams': list(cams.values()), 'secs': secs, 'nogo': list(nogo.values())}, ensure_ascii=False, separators=(',', ':'))
-open('data/latvia.json', 'w').write(body)
-size = len(body.encode())
-json.dump({'v': 1, 't': t, 'bytes': size, 'bbox': [S, W, N, E], 'counts': counts}, open('data/latvia-meta.json', 'w'))
-print(f'latvia.json {size / 1e6:.1f} MB, about {len(gzip.compress(body.encode())) / 1e6:.1f} MB to download')
+MIN = {'latvia': (3000, 1000, 500), 'estonia': (2000, 600, 300), 'lithuania': (2000, 600, 300)}
+failed = []
+for name, (s_, w_, n_, e_) in COUNTRIES.items():
+    inb = lambda lat, lon: s_ <= lat <= n_ and w_ <= lon <= e_
+    c_pois = [p for p in pois if inb(p[0], p[1])]
+    c_cond = [p for p in cond if inb(p[0], p[1])]
+    c_fun = [p for p in fun if inb(p[1], p[2])]
+    c_cams = [p for p in cams_l if inb(p[0], p[1])]
+    c_secs = [p for p in secs if inb(p[0], p[1]) or inb(p[2], p[3])]
+    c_nogo = [z for z in nogo_l if any(inb(la, lo) for la, lo in z[2])]
+    counts = {'nogo': len(c_nogo), 'places': len(c_pois), 'conditions': len(c_cond), 'discover': len(c_fun),
+              'climbs': sum(1 for p in c_cond if p[2] == 'c'), 'cameras': len(c_cams), 'avg_sections': len(c_secs)}
+    print(name, 'counts', counts, flush=True)
+    lo = MIN[name]
+    # sanity check so a half-broken run never replaces a good pack
+    if counts['places'] < lo[0] or counts['conditions'] < lo[1] or counts['discover'] < lo[2]:
+        print(name, ': too little data, keeping the previous pack'); failed.append(name); continue
+    body = json.dumps({'v': 1, 't': t, 'country': name, 'bbox': [s_, w_, n_, e_], 'pois': c_pois, 'cond': c_cond, 'fun': c_fun, 'cams': c_cams, 'secs': c_secs, 'nogo': c_nogo},
+                      ensure_ascii=False, separators=(',', ':'))
+    open('data/%s.json' % name, 'w').write(body)
+    size = len(body.encode())
+    json.dump({'v': 1, 't': t, 'country': name, 'bytes': size, 'bbox': [s_, w_, n_, e_], 'counts': counts}, open('data/%s-meta.json' % name, 'w'))
+    print(f'{name}.json {size / 1e6:.1f} MB, about {len(gzip.compress(body.encode())) / 1e6:.1f} MB to download', flush=True)
+if 'latvia' in failed: raise SystemExit('Latvia pack not made')
