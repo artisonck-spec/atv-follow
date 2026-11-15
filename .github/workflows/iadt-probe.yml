@@ -1,0 +1,10 @@
+name: Protected areas probe
+on:
+  workflow_dispatch:
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pyshp
+      - run: python3 tools/iadt_probe.py
