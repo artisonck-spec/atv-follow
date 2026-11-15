@@ -77,6 +77,8 @@ def cond_type(t):   # same as challengeType() in the app
 
 
 pois, cond, fun, tracks = {}, {}, {}, {}
+towns = {}  # towns and villages for searching without signal: id -> [name, lat, lon, c/t/v/h/s]
+TOWN_KIND = {'city': 'c', 'town': 't', 'village': 'v', 'hamlet': 'h', 'suburb': 's'}
 nogo = {}   # areas where riding off public roads is not allowed: id -> [kind, name, [[lat, lon], ...]]
 
 
@@ -134,6 +136,11 @@ class Reader(osmium.SimpleHandler):
     def node(self, n):
         if len(n.tags) == 0: return
         t = {x.k: x.v for x in n.tags}
+        if t.get('place') in TOWN_KIND and t.get('name'):
+            try:
+                lat, lon = n.location.lat, n.location.lon
+                if S <= lat <= N and W <= lon <= E: towns['n%d' % n.id] = [t['name'][:50], round(lat, 5), round(lon, 5), TOWN_KIND[t['place']]]
+            except Exception: pass
         if t.get('highway') == 'speed_camera' or t.get('enforcement') == 'maxspeed':
             try:
                 lat, lon = n.location.lat, n.location.lon
@@ -230,14 +237,15 @@ for name, (s_, w_, n_, e_) in COUNTRIES.items():
     c_cams = [p for p in cams_l if inb(p[0], p[1])]
     c_secs = [p for p in secs if inb(p[0], p[1]) or inb(p[2], p[3])]
     c_nogo = [z for z in nogo_l if any(inb(la, lo) for la, lo in z[2])]
-    counts = {'nogo': len(c_nogo), 'places': len(c_pois), 'conditions': len(c_cond), 'discover': len(c_fun),
+    c_towns = [x for x in towns.values() if inb(x[1], x[2])]
+    counts = {'towns': len(c_towns), 'nogo': len(c_nogo), 'places': len(c_pois), 'conditions': len(c_cond), 'discover': len(c_fun),
               'climbs': sum(1 for p in c_cond if p[2] == 'c'), 'cameras': len(c_cams), 'avg_sections': len(c_secs)}
     print(name, 'counts', counts, flush=True)
     lo = MIN[name]
     # sanity check so a half-broken run never replaces a good pack
     if counts['places'] < lo[0] or counts['conditions'] < lo[1] or counts['discover'] < lo[2]:
         print(name, ': too little data, keeping the previous pack'); failed.append(name); continue
-    body = json.dumps({'v': 1, 't': t, 'country': name, 'bbox': [s_, w_, n_, e_], 'pois': c_pois, 'cond': c_cond, 'fun': c_fun, 'cams': c_cams, 'secs': c_secs, 'nogo': c_nogo},
+    body = json.dumps({'v': 1, 't': t, 'country': name, 'bbox': [s_, w_, n_, e_], 'pois': c_pois, 'cond': c_cond, 'fun': c_fun, 'cams': c_cams, 'secs': c_secs, 'nogo': c_nogo, 'towns': c_towns},
                       ensure_ascii=False, separators=(',', ':'))
     open('data/%s.json' % name, 'w').write(body)
     size = len(body.encode())
