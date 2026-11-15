@@ -1,7 +1,7 @@
 {
- "build": 44,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=44",
- "notes": "Test of the in-app update",
- "notes_lv": "Lietotnes atjauninājuma pārbaude",
- "notes_ru": "Проверка обновления в приложении"
+ "build": 45,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=45",
+ "notes": "Rider status with crown, light look, sound and interface settings, volume, separate voice language",
+ "notes_lv": "Braucēja statuss ar kroni, gaišais izskats, skaņas un saskarnes iestatījumi, skaļums, atsevišķa balss valoda",
+ "notes_ru": "Статус райдера с короной, светлая тема, настройки звука и интерфейса, громкость, отдельный язык голоса"
 }
