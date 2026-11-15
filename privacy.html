@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATV Trails · Privacy</title>
+<style>
+  :root { --bg: #0e1113; --card: #171b1e; --ink: #eef1f2; --ink2: #a9b1b6; --brand: #2fd4b5; --line: rgba(255,255,255,.08); }
+  @media (prefers-color-scheme: light) { :root { --bg: #f3f5f6; --card: #fff; --ink: #14181b; --ink2: #545e66; --brand: #11957c; --line: rgba(15,30,40,.1); } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 60px; }
+  h1 { font-size: 30px; margin: 0 0 4px; } h2 { font-size: 19px; margin: 28px 0 6px; color: var(--brand); }
+  .sub { color: var(--ink2); margin-bottom: 18px; }
+  .langs { display: flex; gap: 8px; margin-bottom: 22px; } .langs button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 14px; font: inherit; cursor: pointer; }
+  .langs button.on { border-color: var(--brand); color: var(--brand); font-weight: 700; }
+  section[data-l] { display: none; } section[data-l].on { display: block; }
+  ul { padding-left: 20px; } li { margin: 4px 0; } p, li { color: var(--ink); } .muted { color: var(--ink2); font-size: 14px; }
+</style>
+</head>
+<body><main>
+<h1>ATV Trails</h1>
+<div class="sub">Privacy · updated 15 Nov 2026</div>
+<div class="langs"><button data-k="en">English</button><button data-k="lv">Latviešu</button><button data-k="ru">Русский</button></div>
+
+<section data-l="en">
+<p>ATV Trails is a navigation app for ATV and dirt bike riders. It works without an account. This page says what leaves your phone, where it goes and why. We do not sell data, show ads or track you across apps.</p>
+<h2>Kept only on your phone</h2>
+<ul><li>Your recorded rides, places you mark, notes, photos you add, your rider status and settings.</li><li>Your location history. Your position is used on the phone to show the map, record rides and guide you.</li></ul>
+<h2>Sent to services, only when you use a feature</h2>
+<ul>
+<li><b>Routes:</b> the start, end and stops of a route go to the public routing service BRouter (brouter.de) to work out the route.</li>
+<li><b>Maps and places:</b> the map area you look at is loaded from map servers (OpenStreetMap-based, OpenFreeMap, Esri for satellite); place data comes from OpenStreetMap (Overpass); place descriptions and photos from Wikipedia and Wikimedia Commons. These requests contain the area, not who you are.</li>
+<li><b>Live sharing</b> (only when you turn it on): your position, destination and, if you allow it, speed and phone battery are sent to our database (Supabase) so the people with your link can follow you. Sharing stops when you stop it or when it runs out.</li>
+<li><b>Backup</b> (only if you sign in): your e-mail address, and copies of your rides, places, notes, photos and settings are stored in a private folder that only your account can open (Supabase).</li>
+<li><b>Crash reports:</b> when something goes wrong in the app, a short report is sent: the error text, the app version, the phone model and Android version, and a random number for this installation. It contains no location, rides or names. Reports are deleted after 90 days.</li>
+</ul>
+<h2>Permissions</h2>
+<ul><li><b>Location</b> (precise): the map, guidance and recording rides. While you record, the app keeps a notification on screen and records with the screen off (foreground service). It does not use location when you are not using it and not recording.</li><li><b>Notifications:</b> the recording notification.</li><li><b>Photos and camera:</b> only when you choose to add a picture.</li></ul>
+<h2>Deleting your data</h2>
+<ul><li>Rides, places and photos: delete them in the app, or uninstall the app.</li><li>Backup and account: Settings → Backup → <b>Delete backup and account</b>. Everything on the server is deleted at once.</li><li>If you can no longer open the app, write to the e-mail address shown on the app's Google Play page and ask for your backup and account to be deleted; it is done within 30 days.</li></ul>
+<h2>Children</h2><p>The app is not meant for children under 13.</p>
+<h2>Changes</h2><p>If this changes, the date at the top changes, and important changes are shown in the app.</p>
+</section>
+
+<section data-l="lv">
+<p>ATV Trails ir navigācijas lietotne kvadriciklu un krosa motociklu braucējiem. Tā darbojas bez konta. Šajā lapā ir rakstīts, kas atstāj tavu telefonu, kur tas nonāk un kāpēc. Mēs nepārdodam datus, nerādām reklāmas un neizsekojam tevi citās lietotnēs.</p>
+<h2>Glabājas tikai tavā telefonā</h2>
+<ul><li>Tavi ierakstītie braucieni, atzīmētās vietas, piezīmes, pievienotie foto, braucēja statuss un iestatījumi.</li><li>Tava atrašanās vietu vēsture. Atrašanās vieta telefonā tiek izmantota kartei, braucienu ierakstam un norādēm.</li></ul>
+<h2>Sūtīts pakalpojumiem, tikai izmantojot funkciju</h2>
+<ul>
+<li><b>Maršruti:</b> maršruta sākums, beigas un pieturas tiek nosūtītas publiskajam maršrutēšanas pakalpojumam BRouter (brouter.de), lai aprēķinātu maršrutu.</li>
+<li><b>Kartes un vietas:</b> apskatītais kartes apgabals tiek ielādēts no karšu serveriem (uz OpenStreetMap balstīti, OpenFreeMap, Esri satelītam); vietu dati no OpenStreetMap (Overpass); apraksti un foto no Wikipedia un Wikimedia Commons. Šie pieprasījumi satur apgabalu, nevis to, kas tu esi.</li>
+<li><b>Tiešraides kopīgošana</b> (tikai ja to ieslēdz): tava atrašanās vieta, galamērķis un, ja atļauj, ātrums un telefona akumulators tiek nosūtīti uz mūsu datubāzi (Supabase), lai cilvēki ar tavu saiti varētu tev sekot. Kopīgošana beidzas, kad to aptur vai kad tās laiks beidzas.</li>
+<li><b>Dublējums</b> (tikai ja piesakies): tava e-pasta adrese un braucienu, vietu, piezīmju, foto un iestatījumu kopijas glabājas privātā mapē, ko var atvērt tikai tavs konts (Supabase).</li>
+<li><b>Kļūdu atskaites:</b> ja lietotnē kaut kas noiet greizi, tiek nosūtīta īsa atskaite: kļūdas teksts, lietotnes versija, telefona modelis un Android versija, un nejaušs šīs instalācijas numurs. Tajā nav atrašanās vietas, braucienu vai vārdu. Atskaites tiek dzēstas pēc 90 dienām.</li>
+</ul>
+<h2>Atļaujas</h2>
+<ul><li><b>Atrašanās vieta</b> (precīza): karte, norādes un braucienu ierakstīšana. Ierakstot lietotne rāda paziņojumu un ieraksta arī ar izslēgtu ekrānu. Kad lietotni neizmanto un neieraksta, atrašanās vieta netiek izmantota.</li><li><b>Paziņojumi:</b> ieraksta paziņojums.</li><li><b>Foto un kamera:</b> tikai tad, kad pats izvēlies pievienot bildi.</li></ul>
+<h2>Datu dzēšana</h2>
+<ul><li>Braucieni, vietas un foto: dzēs tos lietotnē vai atinstalē lietotni.</li><li>Dublējums un konts: Iestatījumi → Dublējums → <b>Dzēst dublējumu un kontu</b>. Viss serverī tiek dzēsts uzreiz.</li><li>Ja lietotni vairs nevari atvērt, raksti uz e-pastu, kas norādīts lietotnes Google Play lapā, un palūdz dzēst dublējumu un kontu; tas tiek izdarīts 30 dienu laikā.</li></ul>
+<h2>Bērni</h2><p>Lietotne nav paredzēta bērniem līdz 13 gadu vecumam.</p>
+<h2>Izmaiņas</h2><p>Ja kaut kas mainās, mainās datums augšā, un svarīgas izmaiņas tiek parādītas lietotnē.</p>
+</section>
+
+<section data-l="ru">
+<p>ATV Trails — навигационное приложение для квадроциклистов и мотокроссменов. Оно работает без аккаунта. На этой странице написано, что покидает твой телефон, куда и зачем. Мы не продаём данные, не показываем рекламу и не отслеживаем тебя в других приложениях.</p>
+<h2>Хранится только на телефоне</h2>
+<ul><li>Записанные поездки, отмеченные места, заметки, добавленные фото, статус райдера и настройки.</li><li>История местоположений. Местоположение используется на телефоне для карты, записи поездок и подсказок.</li></ul>
+<h2>Отправляется сервисам, только когда ты пользуешься функцией</h2>
+<ul>
+<li><b>Маршруты:</b> начало, конец и остановки маршрута отправляются публичному сервису BRouter (brouter.de) для расчёта маршрута.</li>
+<li><b>Карты и места:</b> просматриваемая область карты загружается с картографических серверов (на основе OpenStreetMap, OpenFreeMap, Esri для спутника); данные о местах — из OpenStreetMap (Overpass); описания и фото — из Wikipedia и Wikimedia Commons. В этих запросах есть область, но не то, кто ты.</li>
+<li><b>Трансляция</b> (только если включишь): твоё местоположение, цель и, если разрешишь, скорость и заряд телефона отправляются в нашу базу данных (Supabase), чтобы люди с твоей ссылкой могли следить за тобой. Трансляция заканчивается, когда ты её останавливаешь или когда истекает время.</li>
+<li><b>Резервная копия</b> (только если войдёшь): твой e-mail и копии поездок, мест, заметок, фото и настроек хранятся в личной папке, которую может открыть только твой аккаунт (Supabase).</li>
+<li><b>Отчёты об ошибках:</b> если в приложении что-то идёт не так, отправляется короткий отчёт: текст ошибки, версия приложения, модель телефона и версия Android, и случайный номер этой установки. В нём нет местоположения, поездок или имён. Отчёты удаляются через 90 дней.</li>
+</ul>
+<h2>Разрешения</h2>
+<ul><li><b>Местоположение</b> (точное): карта, подсказки и запись поездок. Во время записи приложение показывает уведомление и записывает с выключенным экраном. Когда ты не пользуешься приложением и не записываешь, местоположение не используется.</li><li><b>Уведомления:</b> уведомление о записи.</li><li><b>Фото и камера:</b> только когда ты сам добавляешь снимок.</li></ul>
+<h2>Удаление данных</h2>
+<ul><li>Поездки, места и фото: удали их в приложении или удали приложение.</li><li>Резервная копия и аккаунт: Настройки → Резервная копия → <b>Удалить копию и аккаунт</b>. Всё на сервере удаляется сразу.</li><li>Если ты больше не можешь открыть приложение, напиши на e-mail, указанный на странице приложения в Google Play, и попроси удалить копию и аккаунт; это делается в течение 30 дней.</li></ul>
+<h2>Дети</h2><p>Приложение не предназначено для детей младше 13 лет.</p>
+<h2>Изменения</h2><p>Если что-то изменится, изменится дата вверху, а важные изменения будут показаны в приложении.</p>
+</section>
+<p class="muted">ATV Trails</p>
+</main>
+<script>
+  const pick = (k) => { document.querySelectorAll('section[data-l]').forEach((s) => s.classList.toggle('on', s.dataset.l === k)); document.querySelectorAll('.langs button').forEach((b) => b.classList.toggle('on', b.dataset.k === k)); document.documentElement.lang = k; };
+  document.querySelectorAll('.langs button').forEach((b) => b.onclick = () => pick(b.dataset.k));
+  const q = new URLSearchParams(location.search).get('lang'), nav = (navigator.language || 'en').slice(0, 2);
+  pick(['en', 'lv', 'ru'].includes(q) ? q : ['lv', 'ru'].includes(nav) ? nav : 'en');
+</script>
+</body></html>
