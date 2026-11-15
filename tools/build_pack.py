@@ -66,6 +66,44 @@ def cond_type(t):   # same as challengeType() in the app
 
 
 pois, cond, fun, tracks = {}, {}, {}, {}
+nogo = {}   # areas where riding off public roads is not allowed: id -> [kind, name, [[lat, lon], ...]]
+
+
+def nogo_kind(t):
+    """Nature reserves (not the big national or landscape parks, which have their own zones) and military areas."""
+    pc = t.get('protect_class', '')
+    if t.get('landuse') == 'military' or t.get('military') in ('danger_area', 'training_area', 'range'): return 'military'
+    if pc in ('2', '5', '6'): return ''
+    if t.get('leisure') == 'nature_reserve' or (t.get('boundary') == 'protected_area' and pc in ('1', '1a', '1b', '4')): return 'reserve'
+    return ''
+
+
+class NoGo(osmium.SimpleHandler):
+    def area(self, a):
+        t = {x.k: x.v for x in a.tags}
+        k = nogo_kind(t)
+        if not k: return
+        try:
+            from shapely.geometry import Polygon
+            best = None
+            for ring in a.outer_rings():
+                pts = [(n.lon, n.lat) for n in ring]
+                if len(pts) < 4: continue
+                p = Polygon(pts)
+                if best is None or p.area > best.area: best = p
+            if best is None: return
+            c = best.centroid
+            if not (S <= c.y <= N and W <= c.x <= E): return
+            km2 = best.area * 111.3 * 111.3 * 0.55   # rough, at Latvia's latitude
+            if km2 < 0.03: return                        # smaller than 3 ha: leave out
+            g = best.simplify(0.0004, preserve_topology=True)
+            if g.geom_type != 'Polygon' or g.is_empty: return
+            ring = [[round(y, 4), round(x, 4)] for x, y in list(g.exterior.coords)[:-1]]
+            if len(ring) < 3: return
+            nogo[('w' if a.from_way() else 'r') + str(a.orig_id())] = [k, t.get('name', '')[:60], ring]
+        except Exception:
+            pass
+
 cams = {}   # speed cameras: [lat, lon, limit km/h or 0, facing direction in degrees or -1]
 sections = {}   # average-speed sections: relation id -> {'from': node id, 'to': node id, 'lim': km/h}
 want_nodes = {}  # node id -> [lat, lon], filled in a second, quick pass
@@ -147,6 +185,8 @@ for name in FILES:
             def node(self, n):
                 if n.id in want_nodes and want_nodes[n.id] is None: want_nodes[n.id] = [round(n.location.lat, 5), round(n.location.lon, 5)]
         Nodes().apply_file(path)
+    try: NoGo().apply_file(path, locations=True)
+    except Exception as e: print('no-go areas skipped for', name, repr(e)[:200])
     os.remove(path)
     print(f'{name}: read in {time.time() - t0:.0f} s · places {len(pois)} conditions {len(cond)} discover {len(fun)} tracks {len(tracks)}', flush=True)
 
@@ -164,7 +204,7 @@ secs = []
 for k, v in sections.items():
     a, b = want_nodes.get(v['from']), want_nodes.get(v['to'])
     if a and b and S <= a[0] <= N and W <= a[1] <= E: secs.append([a[0], a[1], b[0], b[1], v['lim']])
-counts = {'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams), 'avg_sections': len(secs)}
+counts = {'nogo': len(nogo), 'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams), 'avg_sections': len(secs)}
 print('counts', counts)
 # Sanity check so a half-broken run never replaces a good pack
 if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] < 500:
@@ -172,7 +212,7 @@ if counts['places'] < 3000 or counts['conditions'] < 1000 or counts['discover'] 
 
 t = int(time.time() * 1000)
 os.makedirs('data', exist_ok=True)
-body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun, 'cams': list(cams.values()), 'secs': secs}, ensure_ascii=False, separators=(',', ':'))
+body = json.dumps({'v': 1, 't': t, 'bbox': [S, W, N, E], 'pois': pois, 'cond': cond, 'fun': fun, 'cams': list(cams.values()), 'secs': secs, 'nogo': list(nogo.values())}, ensure_ascii=False, separators=(',', ':'))
 open('data/latvia.json', 'w').write(body)
 size = len(body.encode())
 json.dump({'v': 1, 't': t, 'bytes': size, 'bbox': [S, W, N, E], 'counts': counts}, open('data/latvia-meta.json', 'w'))
