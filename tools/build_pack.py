@@ -11,6 +11,11 @@ import numpy as np
 import osmium
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# The build machines sometimes have no working IPv6 route ("Network is unreachable"): always connect over IPv4.
+import socket
+_gai = socket.getaddrinfo
+socket.getaddrinfo = lambda host, port, family=0, *a, **k: _gai(host, port, socket.AF_INET, *a, **k)
+
 S, W, N, E = 55.60, 20.80, 58.15, 28.30          # Latvia plus a strip over each border
 FILES = ['latvia', 'estonia', 'lithuania']
 UA = {'User-Agent': 'ATV-Trails-pack/1.0 (github.com/artisonck-spec/atv-follow)'}
