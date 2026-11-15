@@ -223,6 +223,14 @@ for k, v in sections.items():
     a, b = want_nodes.get(v['from']), want_nodes.get(v['to'])
     if a and b and S <= a[0] <= N and W <= a[1] <= E: secs.append([a[0], a[1], b[0], b[1], v['lim']])
 nogo_l, cams_l = list(nogo.values()), list(cams.values())
+# official protected nature areas of Latvia (reserves and their zones, microreserves, parks)
+try:
+    import iadt
+    off = iadt.load()
+    print('official protected areas:', len(off), flush=True)
+    nogo_l += off
+except Exception as e:
+    print('official protected areas skipped:', repr(e)[:300], flush=True)
 print('all of it:', {'nogo': len(nogo_l), 'places': len(pois), 'conditions': len(cond), 'discover': len(fun), 'climbs': len(climbs), 'cameras': len(cams_l), 'avg_sections': len(secs)}, flush=True)
 
 t = int(time.time() * 1000)
