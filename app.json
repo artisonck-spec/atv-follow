@@ -1,7 +1,7 @@
 {
- "build": 52,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=52",
- "notes": "Avoid highways on easy trails; route planning and navigation precision in the ride reports",
- "notes_lv": "Izvairīties no šosejām vieglajās takās; maršrutu plānošana un navigācijas precizitāte brauciena atskaitēs",
- "notes_ru": "Избегать шоссе на лёгких трассах; планирование маршрутов и точность навигации в отчётах"
+ "build": 53,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=53",
+ "notes": "Car mode: speed limit sign, lanes, fastest/shortest, gravel choice, earlier guidance, fuel and parking near the destination",
+ "notes_lv": "Auto režīms: ātruma ierobežojuma zīme, joslas, ātrākais/īsākais, grants izvēle, agrākas norādes, degviela un stāvvieta pie galamērķa",
+ "notes_ru": "Режим авто: знак ограничения скорости, полосы, быстрый/короткий, выбор гравия, ранние подсказки, заправка и парковка у цели"
 }
