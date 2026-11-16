@@ -1,7 +1,7 @@
 {
- "build": 50,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=50",
- "notes": "Ride reports: after each ride the app sends how it went, so problems can be found and fixed",
- "notes_lv": "Brauciena atskaites: pēc katra brauciena lietotne nosūta, kā tas noritēja, lai problēmas var atrast un salabot",
- "notes_ru": "Отчёты о поездках: после каждой поездки приложение отправляет, как она прошла, чтобы находить и исправлять проблемы"
+ "build": 52,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=52",
+ "notes": "Avoid highways on easy trails; route planning and navigation precision in the ride reports",
+ "notes_lv": "Izvairīties no šosejām vieglajās takās; maršrutu plānošana un navigācijas precizitāte brauciena atskaitēs",
+ "notes_ru": "Избегать шоссе на лёгких трассах; планирование маршрутов и точность навигации в отчётах"
 }
