@@ -1,7 +1,7 @@
 {
- "build": 55,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=55",
- "notes": "Navigation now keeps going when you switch to another app: GPS, voice and route checks carry on (you'll see a 'Navigating' notification).",
- "notes_lv": "Navigācija tagad turpinās, kad pārslēdzies uz citu aplikāciju: GPS, balss un maršruta pārbaudes turpina strādāt (redzēsi paziņojumu 'Navigating').",
- "notes_ru": "Навигация теперь продолжается, когда вы переключаетесь на другое приложение: GPS, голос и проверка маршрута продолжают работать (появится уведомление 'Navigating')."
+ "build": 56,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=56",
+ "notes": "The round location button and GPS label no longer slide under the bottom bar.",
+ "notes_lv": "Apaļā atrašanās vietas poga un GPS uzraksts vairs nepaslīd zem apakšējās joslas.",
+ "notes_ru": "Круглая кнопка местоположения и метка GPS больше не заезжают под нижнюю панель."
 }
