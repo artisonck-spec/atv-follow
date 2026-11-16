@@ -1,7 +1,7 @@
 {
- "build": 54,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=54",
- "notes": "Navigation fixes from your drive home: a missed turn by car now gives a fresh route ahead instead of sending you back; voice messages no longer cut each other off; fewer 'off route' messages; Shortest uses fewer side streets.",
- "notes_lv": "Navigācijas labojumi pēc brauciena uz mājām: nokavēts pagrieziens ar auto tagad dod jaunu maršrutu uz priekšu, nevis sūta atpakaļ; balss ziņas vairs nepārtrauc viena otru; mazāk 'nobraucāt no maršruta' ziņu; Īsākais mazāk mētājas pa sānu ielām.",
- "notes_ru": "Исправления навигации после поездки домой: пропущенный поворот на машине теперь даёт новый маршрут вперёд, а не назад; голосовые сообщения больше не перебивают друг друга; меньше сообщений 'вы сошли с маршрута'; Кратчайший реже петляет по переулкам."
+ "build": 55,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=55",
+ "notes": "Navigation now keeps going when you switch to another app: GPS, voice and route checks carry on (you'll see a 'Navigating' notification).",
+ "notes_lv": "Navigācija tagad turpinās, kad pārslēdzies uz citu aplikāciju: GPS, balss un maršruta pārbaudes turpina strādāt (redzēsi paziņojumu 'Navigating').",
+ "notes_ru": "Навигация теперь продолжается, когда вы переключаетесь на другое приложение: GPS, голос и проверка маршрута продолжают работать (появится уведомление 'Navigating')."
 }
