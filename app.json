@@ -1,7 +1,7 @@
 {
- "build": 48,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=48",
- "notes": "Official protected nature areas and microreserves on the map; trail routes go round them",
- "notes_lv": "Oficiālās aizsargājamās dabas teritorijas un mikroliegumi kartē; taku maršruti tos apiet",
- "notes_ru": "Официальные охраняемые природные территории и микрозаказники на карте; маршруты по трассам их объезжают"
+ "build": 49,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=49",
+ "notes": "Simpler: personal-use version (no rider status, shared reports, Google sign-in or light look)",
+ "notes_lv": "Vienkāršāka: versija personīgai lietošanai (bez statusa, kopīgiem ziņojumiem, Google pieteikšanās un gaišā izskata)",
+ "notes_ru": "Проще: версия для личного пользования (без статуса, общих отчётов, входа через Google и светлой темы)"
 }
