@@ -1,7 +1,7 @@
 {
- "build": 49,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=49",
- "notes": "Simpler: personal-use version (no rider status, shared reports, Google sign-in or light look)",
- "notes_lv": "Vienkāršāka: versija personīgai lietošanai (bez statusa, kopīgiem ziņojumiem, Google pieteikšanās un gaišā izskata)",
- "notes_ru": "Проще: версия для личного пользования (без статуса, общих отчётов, входа через Google и светлой темы)"
+ "build": 50,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=50",
+ "notes": "Ride reports: after each ride the app sends how it went, so problems can be found and fixed",
+ "notes_lv": "Brauciena atskaites: pēc katra brauciena lietotne nosūta, kā tas noritēja, lai problēmas var atrast un salabot",
+ "notes_ru": "Отчёты о поездках: после каждой поездки приложение отправляет, как она прошла, чтобы находить и исправлять проблемы"
 }
