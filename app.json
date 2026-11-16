@@ -1,7 +1,7 @@
 {
- "build": 53,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=53",
- "notes": "Car mode: speed limit sign, lanes, fastest/shortest, gravel choice, earlier guidance, fuel and parking near the destination",
- "notes_lv": "Auto režīms: ātruma ierobežojuma zīme, joslas, ātrākais/īsākais, grants izvēle, agrākas norādes, degviela un stāvvieta pie galamērķa",
- "notes_ru": "Режим авто: знак ограничения скорости, полосы, быстрый/короткий, выбор гравия, ранние подсказки, заправка и парковка у цели"
+ "build": 54,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=54",
+ "notes": "Navigation fixes from your drive home: a missed turn by car now gives a fresh route ahead instead of sending you back; voice messages no longer cut each other off; fewer 'off route' messages; Shortest uses fewer side streets.",
+ "notes_lv": "Navigācijas labojumi pēc brauciena uz mājām: nokavēts pagrieziens ar auto tagad dod jaunu maršrutu uz priekšu, nevis sūta atpakaļ; balss ziņas vairs nepārtrauc viena otru; mazāk 'nobraucāt no maršruta' ziņu; Īsākais mazāk mētājas pa sānu ielām.",
+ "notes_ru": "Исправления навигации после поездки домой: пропущенный поворот на машине теперь даёт новый маршрут вперёд, а не назад; голосовые сообщения больше не перебивают друг друга; меньше сообщений 'вы сошли с маршрута'; Кратчайший реже петляет по переулкам."
 }
