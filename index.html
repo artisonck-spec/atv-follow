@@ -41,19 +41,8 @@
   .av::after { content: ''; position: absolute; right: 0; bottom: 0; width: 13px; height: 13px; border-radius: 50%; background: var(--ink-3); border: 3px solid #23262a; }
   .live .av::after { background: var(--green); }
   .stale .av::after { background: var(--amber); }
-  .av.has-pic > img, .av.has-pic > svg:not(.rk-art) { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .av.has-pic > img, .av.has-pic > svg { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
   .av.has-pic { background: #1d2124; padding: 0; }
-  .rk-art { position: absolute; left: -28.57%; top: -28.57%; width: 157.14%; height: 157.14%; pointer-events: none; overflow: visible; z-index: 1; }
-  .av.rk { margin: 0 6px; }
-  .av.rk::after { z-index: 2; }
-  #rank { display: none; color: #ffd23f; font: 700 12px var(--font); letter-spacing: .08em; text-transform: uppercase; }
-  #rank.on { display: block; }
-  @media (prefers-reduced-motion: no-preference) {
-    .rk-fl { transform-box: fill-box; transform-origin: 50% 100%; animation: rkFl 1.4s ease-in-out infinite alternate; }
-    .rk-glow { animation: rkGl 1.8s ease-in-out infinite alternate; }
-  }
-  @keyframes rkFl { from { transform: scaleY(.78); } to { transform: scaleY(1.12); } }
-  @keyframes rkGl { to { opacity: .6; } }
   .av-img { object-fit: contain !important; background: radial-gradient(circle at 50% 38%, #3a434b, #15181b 72%); }
   .ended .av { background: #2a2c2f; color: var(--ink-2); box-shadow: none; }
   .ended .av::after { background: var(--red); }
@@ -144,7 +133,6 @@
 <div id="head">
   <div class="av" id="av">A</div>
   <div style="min-width:0;flex:1">
-    <div id="rank"></div>
     <div id="who">Loading…</div>
     <div id="stateTxt">Connecting</div>
   </div>
@@ -226,63 +214,6 @@
 
 // Ride avatars: original illustrations, shaded for a bit of depth. Each is a 96x96 SVG.
 // Profile pictures to pick: the two riders (pictures in avatars/). Older choices show the nearest of the two.
-// Status art drawn over the profile picture. The picture is a circle at (42,42) r 42; the art box is 132 wide around it.
-function rankArt(lv, id) {
-  if (!lv) return '';
-  id = id || 'r' + Math.random().toString(36).slice(2, 7);
-  const RING = [null, ['#7a4a20', '#e7ad72', '#8a5a2b'], ['#7d8790', '#f6f8fb', '#9aa4ad'], ['#a8770a', '#ffe58a', '#c99a1a'], ['#a8770a', '#ffe58a', '#c99a1a'], ['#b85c00', '#ffd36b', '#d98a0b']][lv];
-  let s = `<svg class="rk-art rk-${lv}" viewBox="-24 -24 132 132" aria-hidden="true"><defs>
-    <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${RING[1]}"/><stop offset=".5" stop-color="${RING[0]}"/><stop offset="1" stop-color="${RING[1]}"/></linearGradient>
-    <linearGradient id="${id}au" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#ffc83d"/><stop offset="1" stop-color="#c98a06"/></linearGradient>
-    <linearGradient id="${id}lf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe58a"/><stop offset="1" stop-color="#b8860b"/></linearGradient>
-    <radialGradient id="${id}fl" cx=".5" cy="1" r="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".35" stop-color="#ffb02e"/><stop offset=".8" stop-color="#ff4d1a"/><stop offset="1" stop-color="#ff4d1a" stop-opacity="0"/></radialGradient></defs>`;
-  // 5 · fire aura: flames all round, flickering
-  if (lv >= 5) {
-    s += `<circle cx="42" cy="42" r="52" fill="none" stroke="#ff7a1a" stroke-width="10" opacity=".35" class="rk-glow"/><g class="rk-fire">`;
-    for (let k = 0; k < 16; k++) {
-      const a = k * 22.5 + 11, h = 22 + (k % 3) * 6, w = 9;
-      s += `<g transform="rotate(${a} 42 42)"><path class="rk-fl" style="animation-delay:${((k * 7) % 6) * -.21}s" d="M42 ${-h} C${42 + w * .5} ${-h * .55} ${42 + w} ${-h * .1} 42 6 C${42 - w} ${-h * .1} ${42 - w * .5} ${-h * .55} 42 ${-h} z" fill="url(#${id}fl)"/></g>`;
-    }
-    s += '</g>';
-  }
-  // 2+ · metal ring
-  s += `<circle cx="42" cy="42" r="43.2" fill="none" stroke="url(#${id}g)" stroke-width="4"/><circle cx="42" cy="42" r="45.4" fill="none" stroke="rgba(0,0,0,.35)" stroke-width=".8"/>`;
-  // 3+ · laurel wreath up both sides
-  if (lv >= 3) {
-    const branch = (dir) => {
-      let b = '';
-      const pt = (deg, r) => [42 + r * Math.cos(deg * Math.PI / 180), 42 + r * Math.sin(deg * Math.PI / 180)];
-      const a0 = 98, a1 = 222, R = 50;
-      let d = ''; for (let a = a0; a <= a1; a += 4) { const [x, y] = pt(dir < 0 ? 180 - a : a, R); d += (d ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }
-      b += `<path d="${d}" fill="none" stroke="#9a6f08" stroke-width="1.6" stroke-linecap="round"/>`;
-      for (let a = a0 + 8, i = 0; a <= a1 - 2; a += 11, i++) {
-        const aa = dir < 0 ? 180 - a : a, [x, y] = pt(aa, R), len = 8.5 - (a - a0) / 40;
-        for (const side of [-1, 1]) {
-          const rot = aa + 90 * dir * -1 + side * 38 * dir;
-          b += `<ellipse cx="${(x + Math.cos((aa + side * 90) * Math.PI / 180) * 0).toFixed(1)}" cy="${y.toFixed(1)}" rx="${len.toFixed(1)}" ry="2.6" transform="rotate(${(aa + (dir > 0 ? 90 : -90) + side * 35).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)}) translate(${(len * .8).toFixed(1)} 0)" fill="url(#${id}lf)" stroke="#7d5806" stroke-width=".5"/>`;
-        }
-      }
-      return b;
-    };
-    s += branch(1) + branch(-1);
-  }
-  // 2+ · star medal at the bottom
-  if (lv >= 2) {
-    const st = []; for (let k = 0; k < 10; k++) { const r = k % 2 ? 3.4 : 7.6, a = -90 + k * 36; st.push((42 + r * Math.cos(a * Math.PI / 180)).toFixed(2) + ',' + (88 + r * Math.sin(a * Math.PI / 180)).toFixed(2)); }
-    s += `<path d="M34 92 l-5 13 5-2 3 4 5-11z M50 92 l5 13 -5-2 -3 4 -5-11z" fill="#c4302b" stroke="#7a1512" stroke-width=".6"/>
-      <circle cx="42" cy="88" r="11" fill="#1b2430" stroke="url(#${id}g)" stroke-width="2.6"/><polygon points="${st.join(' ')}" fill="url(#${id}au)" stroke="#8a6205" stroke-width=".5"/>`;
-  }
-  // 4+ · crown on top, tipped a little
-  if (lv >= 4) {
-    s += `<g transform="rotate(-9 42 0)"><path d="M22 4 L19 -16 L30 -6 L36 -22 L42 -9 L48 -22 L54 -6 L65 -16 L62 4 Z" fill="url(#${id}au)" stroke="#8a6205" stroke-width="1.1" stroke-linejoin="round"/>
-      <rect x="21" y="0" width="42" height="6.5" rx="2" fill="url(#${id}au)" stroke="#8a6205" stroke-width="1.1"/>
-      <circle cx="19" cy="-17" r="2.4" fill="#fff3b0" stroke="#8a6205" stroke-width=".7"/><circle cx="36" cy="-23" r="2.4" fill="#fff3b0" stroke="#8a6205" stroke-width=".7"/><circle cx="48" cy="-23" r="2.4" fill="#fff3b0" stroke="#8a6205" stroke-width=".7"/><circle cx="65" cy="-17" r="2.4" fill="#fff3b0" stroke="#8a6205" stroke-width=".7"/>
-      <circle cx="42" cy="3.2" r="2.3" fill="#e0263a"/><circle cx="31" cy="3.2" r="1.8" fill="#1f8fff"/><circle cx="53" cy="3.2" r="1.8" fill="#1f8fff"/>
-      <path d="M26 -3 L30 -6" stroke="#fff8d0" stroke-width="1.2" stroke-linecap="round" opacity=".8"/></g>`;
-  }
-  return s + '</svg>';
-}
-const RANKS = ['', 'Trail Rider', 'Explorer', 'Pathfinder', 'Legend', 'Mythic'];
 const AVATARS = {
   atv: { label: 'ATV', svg: '<img class="av-img" alt="" src="avatars/atv.webp">' },
   dirt: { label: 'Dirt bike', svg: '<img class="av-img" alt="" src="avatars/dirt.webp">' },
@@ -301,15 +232,13 @@ for (const [k, to] of [['enduro', 'dirt'], ['helmet', 'dirt'], ['utv', 'atv'], [
     $('msg').classList.remove('on');
     const name = (s.rider || 'Rider').trim() || 'Rider';
     // the rider's profile picture: a ride avatar or their photo; otherwise the first letter of the name
-    const rank = Math.max(0, Math.min(5, +s.rank || 0)), pic = s.pic || '', key = pic + '|' + name + '|' + rank;
+    const pic = s.pic || '', key = pic + '|' + name;
     if ($('av').dataset.k !== key) {
       $('av').dataset.k = key;
       if (pic.startsWith('av:') && AVATARS[pic.slice(3)]) $('av').innerHTML = AVATARS[pic.slice(3)].svg;
       else if (/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/.test(pic)) $('av').innerHTML = '<img alt="" src="' + pic + '">';
       else $('av').textContent = name[0].toUpperCase();
       $('av').classList.toggle('has-pic', !!$('av').querySelector('img, svg'));
-      $('av').classList.toggle('rk', rank > 0); if (rank) $('av').insertAdjacentHTML('beforeend', rankArt(rank));
-      $('rank').textContent = RANKS[rank]; $('rank').classList.toggle('on', rank > 0);
     }
     const age = s.updated_at ? (Date.now() - new Date(s.updated_at)) / 1000 : null;
     const b = document.body;
