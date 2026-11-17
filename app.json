@@ -1,7 +1,7 @@
 {
- "build": 57,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=57",
- "notes": "Missed a turn while driving? The new route now continues the way you are going, instead of telling you to turn back to the turn you missed.",
- "notes_lv": "Nokavēji pagriezienu braucot? Jaunais maršruts tagad turpinās tajā virzienā, kurā brauc, nevis liek griezties atpakaļ uz nokavēto pagriezienu.",
- "notes_ru": "Пропустили поворот? Новый маршрут теперь продолжается в направлении движения, а не отправляет обратно к пропущенному повороту."
+ "build": 58,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=58",
+ "notes": "Ride screen: Fuel and Parking buttons removed; the speedometer and side buttons no longer hide behind the bottom card.",
+ "notes_lv": "Brauciena ekrāns: Degvielas un Stāvvietas pogas noņemtas; spidometrs un sānu pogas vairs neslēpjas aiz apakšējās kartītes.",
+ "notes_ru": "Экран поездки: кнопки Топливо и Парковка убраны; спидометр и боковые кнопки больше не прячутся за нижней карточкой."
 }
