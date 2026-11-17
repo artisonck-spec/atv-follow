@@ -1,7 +1,7 @@
 {
- "build": 56,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=56",
- "notes": "The round location button and GPS label no longer slide under the bottom bar.",
- "notes_lv": "Apaļā atrašanās vietas poga un GPS uzraksts vairs nepaslīd zem apakšējās joslas.",
- "notes_ru": "Круглая кнопка местоположения и метка GPS больше не заезжают под нижнюю панель."
+ "build": 57,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=57",
+ "notes": "Missed a turn while driving? The new route now continues the way you are going, instead of telling you to turn back to the turn you missed.",
+ "notes_lv": "Nokavēji pagriezienu braucot? Jaunais maršruts tagad turpinās tajā virzienā, kurā brauc, nevis liek griezties atpakaļ uz nokavēto pagriezienu.",
+ "notes_ru": "Пропустили поворот? Новый маршрут теперь продолжается в направлении движения, а не отправляет обратно к пропущенному повороту."
 }
