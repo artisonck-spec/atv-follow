@@ -1,7 +1,7 @@
 {
- "build": 58,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=58",
- "notes": "Ride screen: Fuel and Parking buttons removed; the speedometer and side buttons no longer hide behind the bottom card.",
- "notes_lv": "Brauciena ekrāns: Degvielas un Stāvvietas pogas noņemtas; spidometrs un sānu pogas vairs neslēpjas aiz apakšējās kartītes.",
- "notes_ru": "Экран поездки: кнопки Топливо и Парковка убраны; спидометр и боковые кнопки больше не прячутся за нижней карточкой."
+ "build": 59,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=59",
+ "notes": "Turn instructions now come a few seconds before the turn, not at it; a new route after leaving the route comes faster when the route server is slow.",
+ "notes_lv": "Pagriezienu norādes tagad skan dažas sekundes pirms pagrieziena, nevis pie tā; jauns maršruts pēc nobraukšanas no maršruta nāk ātrāk, kad maršrutu serveris ir lēns.",
+ "notes_ru": "Подсказки о поворотах теперь звучат за несколько секунд до поворота, а не на нём; новый маршрут после схода с маршрута приходит быстрее, когда сервер маршрутов медленный."
 }
