@@ -1,0 +1,87 @@
+name: Build ATV Trails app
+
+# The app's code stays private (atv-app). It is only read here, with a read-only key saved as the secret
+# ATV_APP_TOKEN, so the build runs on a public repo's free minutes. Started by hand with the build number.
+on:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: "Build number (must be higher than the last one on the phone)"
+        required: true
+      ref:
+        description: "Branch of atv-app to build"
+        default: "dev"
+      skip_checks:
+        description: "Make the APK without the checks (only in an emergency): yes / no"
+        default: "no"
+
+permissions:
+  contents: write
+
+jobs:
+  checks:
+    if: ${{ github.event.inputs.skip_checks != 'yes' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: artisonck-spec/atv-app
+          ref: ${{ github.event.inputs.ref }}
+          token: ${{ secrets.ATV_APP_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          repository: artisonck-spec/atv-app
+          ref: preview-data
+          token: ${{ secrets.ATV_APP_TOKEN }}
+          path: pvdata
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: python3 tools/make_preview.py pvdata pvout > /dev/null
+      - name: App starts, rides, and its main features work
+        run: |
+          cd tools/ui_test
+          npm init -y >/dev/null && npm i puppeteer@23.11.1 >/dev/null
+          node smoke.js "$GITHUB_WORKSPACE/pvout/index.html" "$GITHUB_WORKSPACE/shots"
+          node checks.js "$GITHUB_WORKSPACE/pvout/index.html" "$GITHUB_WORKSPACE/shots"
+      - name: Real routes (tried twice, as the public routing server is sometimes slow)
+        run: |
+          cd tools/ui_test
+          node length.js "$GITHUB_WORKSPACE/pvout/index.html" || { echo "first try failed · trying again in 60 s"; sleep 60; node length.js "$GITHUB_WORKSPACE/pvout/index.html"; }
+
+  build:
+    needs: checks
+    if: ${{ always() && (needs.checks.result == 'success' || needs.checks.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    env:
+      ATV_BUILD: ${{ github.event.inputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: artisonck-spec/atv-app
+          ref: ${{ github.event.inputs.ref }}
+          token: ${{ secrets.ATV_APP_TOKEN }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+      - name: Pack map engine and fonts into the app
+        run: python3 tools/fetch_assets.py
+      - name: Build APK
+        run: gradle assembleDebug --no-daemon -q
+      - name: Rename APK
+        run: |
+          mkdir -p out
+          cp app/build/outputs/apk/debug/app-debug.apk "out/atv-trails-build-$ATV_BUILD.apk"
+      - name: Release (for the update step)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-build-${{ github.event.inputs.build }}
+          name: App build ${{ github.event.inputs.build }}
+          prerelease: true
+          files: out/*.apk
+          body: ATV Trails build ${{ github.event.inputs.build }}.
