@@ -1,7 +1,7 @@
 {
- "build": 59,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=59",
- "notes": "Turn instructions now come a few seconds before the turn, not at it; a new route after leaving the route comes faster when the route server is slow.",
- "notes_lv": "Pagriezienu norādes tagad skan dažas sekundes pirms pagrieziena, nevis pie tā; jauns maršruts pēc nobraukšanas no maršruta nāk ātrāk, kad maršrutu serveris ir lēns.",
- "notes_ru": "Подсказки о поворотах теперь звучат за несколько секунд до поворота, а не на нём; новый маршрут после схода с маршрута приходит быстрее, когда сервер маршрутов медленный."
+ "build": 60,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=60",
+ "notes": "Speed cameras: now found on long straight roads (the Sigulda highway ones were missed), warned from 500 m, and shown on the map while you plan a route.",
+ "notes_lv": "Ātruma kameras: tagad tiek atrastas arī uz gariem taisniem ceļiem (Siguldas šosejas kameras tika palaistas garām), brīdinājums no 500 m, un tās redzamas kartē, kad plāno maršrutu.",
+ "notes_ru": "Камеры скорости: теперь находятся и на длинных прямых дорогах (камеры на Сигулдском шоссе пропускались), предупреждение за 500 м, и они видны на карте при планировании маршрута."
 }
