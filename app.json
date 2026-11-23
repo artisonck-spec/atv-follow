@@ -1,7 +1,7 @@
 {
- "build": 60,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=60",
- "notes": "Speed cameras: now found on long straight roads (the Sigulda highway ones were missed), warned from 500 m, and shown on the map while you plan a route.",
- "notes_lv": "Ātruma kameras: tagad tiek atrastas arī uz gariem taisniem ceļiem (Siguldas šosejas kameras tika palaistas garām), brīdinājums no 500 m, un tās redzamas kartē, kad plāno maršrutu.",
- "notes_ru": "Камеры скорости: теперь находятся и на длинных прямых дорогах (камеры на Сигулдском шоссе пропускались), предупреждение за 500 м, и они видны на карте при планировании маршрута."
+ "build": 61,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=61",
+ "notes": "New voice and speed camera warnings: cameras on the highway are now found and announced from 500 m, plus a warning when you're 30 km/h or more over the limit.",
+ "notes_lv": "Jauna balss un ātruma kameru brīdinājumi: kameras uz šosejas tagad tiek atrastas un paziņotas no 500 m, un brīdinājums, ja brauc 30 km/h vai vairāk virs atļautā.",
+ "notes_ru": "Новый голос и предупреждения о камерах: камеры на шоссе теперь находятся и объявляются за 500 м, плюс предупреждение при превышении на 30 км/ч и больше."
 }
