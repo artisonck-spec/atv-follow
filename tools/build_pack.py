@@ -183,8 +183,11 @@ class Reader(osmium.SimpleHandler):
 os.makedirs('/tmp/osm', exist_ok=True)
 for name in FILES:
     path = '/tmp/osm/%s.osm.pbf' % name
-    url = 'https://download.geofabrik.de/europe/%s-latest.osm.pbf' % name
-    for attempt in range(4):
+    # Geofabrik first; since 16 Nov it answers 404 to these runners, so a second mirror of the same daily OSM extract is tried too
+    urls = ['https://download.geofabrik.de/europe/%s-latest.osm.pbf' % name,
+            'https://download.openstreetmap.fr/extracts/europe/%s-latest.osm.pbf' % name]
+    for attempt in range(6):
+        url = urls[attempt % len(urls)]
         try:
             with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=600) as r, open(path, 'wb') as f:
                 while True:
@@ -193,7 +196,7 @@ for name in FILES:
                     f.write(chunk)
             break
         except Exception as e:
-            print(name, 'download failed:', str(e)[:120], flush=True); time.sleep(30)
+            print(name, 'download failed from', url.split('/')[2], str(e)[:120], flush=True); time.sleep(30)
     else:
         raise SystemExit('Could not download the map file for ' + name + '; the previous pack stays published')
     t0 = time.time()
