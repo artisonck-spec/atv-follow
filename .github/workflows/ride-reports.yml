@@ -1,0 +1,51 @@
+name: Ride reports (encrypted)
+
+# Each night: copy new ATV Trails ride and crash reports from Supabase into the branch "reports-enc", ENCRYPTED with
+# tools/reports_pub.pem (only the private key in the private atv-app repo can open them; they hold GPS tracks).
+# The read key is taken from the private atv-app repo at run time and never printed. Nothing is printed about the content.
+on:
+  schedule:
+    - cron: "17 23 * * *"     # 01:17 Riga time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: artisonck-spec/atv-app
+          ref: main
+          token: ${{ secrets.ATV_APP_TOKEN }}
+          path: app
+          sparse-checkout: .github/workflows/ride-reports.yml
+          sparse-checkout-cone-mode: false
+      - name: New reports since last time
+        run: |
+          set -e
+          READ_KEY=$(grep -o 'READ_KEY: [0-9a-f]*' app/.github/workflows/ride-reports.yml | cut -d' ' -f2)
+          echo "::add-mask::$READ_KEY"
+          rm -rf app
+          git fetch -q origin reports-enc && git checkout -q reports-enc || { git checkout -q --orphan reports-enc && git rm -rqf . && echo "2026-11-23T17:43:46.116288+00:00" > last.txt; }
+          SINCE=$(cat last.txt)
+          curl -sf -X POST "https://umagrtiiygfnjiwsflea.supabase.co/rest/v1/rpc/read_reports" -H "apikey: sb_publishable_zCRZtTY-Z3v-0VNVrDuVWg__zTXvOZM" -H "Content-Type: application/json" \
+            -d "{\"p_key\":\"$READ_KEY\",\"p_since\":\"$SINCE\"}" -o /tmp/new.json
+          N=$(python3 -c "import json;j=json.load(open('/tmp/new.json')) or {};print(len(j.get('rides',[]))+len(j.get('errors',[])))")
+          echo "new reports: $N"
+          if [ "$N" = "0" ]; then exit 0; fi
+          D=$(date -u +%Y-%m-%dT%H%M)
+          mkdir -p new
+          git show main:tools/reports_pub.pem > /tmp/pub.pem
+          openssl rand -hex 32 > /tmp/k
+          openssl enc -aes-256-cbc -pbkdf2 -salt -pass file:/tmp/k -in /tmp/new.json -out "new/$D.json.enc"
+          openssl pkeyutl -encrypt -pubin -inkey /tmp/pub.pem -pkeyopt rsa_padding_mode:oaep -in /tmp/k -out "new/$D.key.enc"
+          python3 -c "import json;print(json.load(open('/tmp/new.json'))['now'])" > last.txt
+          rm -f /tmp/new.json /tmp/k
+          git -c user.name="Ride reports" -c user.email="noreply@anthropic.com" add -A
+          git -c user.name="Ride reports" -c user.email="noreply@anthropic.com" commit -qm "Ride reports $D (encrypted)"
+          git push -q origin reports-enc
