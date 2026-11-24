@@ -1,7 +1,7 @@
 {
- "build": 61,
- "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=61",
- "notes": "New voice and speed camera warnings: cameras on the highway are now found and announced from 500 m, plus a warning when you're 30 km/h or more over the limit.",
- "notes_lv": "Jauna balss un ātruma kameru brīdinājumi: kameras uz šosejas tagad tiek atrastas un paziņotas no 500 m, un brīdinājums, ja brauc 30 km/h vai vairāk virs atļautā.",
- "notes_ru": "Новый голос и предупреждения о камерах: камеры на шоссе теперь находятся и объявляются за 500 м, плюс предупреждение при превышении на 30 км/ч и больше."
+ "build": 62,
+ "url": "https://raw.githubusercontent.com/artisonck-spec/atv-follow/apk/atv-trails.apk?b=62",
+ "notes": "Map data (with speed cameras) now updates on mobile data too when it is over a week old.",
+ "notes_lv": "Kartes dati (ar ātruma kamerām) tagad atjaunojas arī ar mobilajiem datiem, ja tie ir vecāki par nedēļu.",
+ "notes_ru": "Данные карты (с камерами скорости) теперь обновляются и по мобильным данным, если они старше недели."
 }
