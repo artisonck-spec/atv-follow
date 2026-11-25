@@ -25,5 +25,9 @@ jobs:
           git config user.email "artisonck-spec@users.noreply.github.com"
           git add data/*.json
           git commit -m "Baltic map data $(date -u +%F)" || exit 0
-          git pull --rebase -q origin main
+          # Another run may have published fresh data meanwhile: then keep that one instead of failing.
+          if ! git pull --rebase -q origin main; then
+            git rebase --abort
+            echo "Main already has newer map data from another run; nothing to publish"; exit 0
+          fi
           git push origin HEAD:main
